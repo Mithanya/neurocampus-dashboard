@@ -37,8 +37,8 @@ Access the live application at:
 
 ## File Structure
 neurocampus-pro/
-├── index.html # Main application file (HTML, CSS, JS)
-└── README.md # Project documentation
+ index.html # Main application file (HTML, CSS, JS)
+ README.md # Project documentation
 
 ## Design Principles
 
