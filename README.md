@@ -70,6 +70,4 @@ LinkedIn: [https://www.linkedin.com/in/mithanya-murugesan/](https://www.linkedin
 ## License
 
 This project is provided for educational and demonstration purposes.
-
---- 
 NeuroCampus Pro – Intelligent Academic Suite
