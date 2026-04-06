@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>NeuroCampus Pro | Intelligent Academic Suite</title>
+
+<!-- Chart.js CDN for premium bar chart -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s;
+  }
+
+  /* Dark theme (default) */
+  :root {
+    --bg: #0b1120;
+    --card-bg: rgba(18, 25, 45, 0.75);
+    --card-solid: rgba(30, 41, 59, 0.85);
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --accent: #38bdf8;
+    --accent-glow: #0ea5e9;
+    --border-glow: rgba(56, 189, 248, 0.3);
+    --stat-gradient-start: #2dd4bf;
+    --stat-gradient-end: #3b82f6;
+    --sidebar-hover: rgba(56, 189, 248, 0.15);
+    --input-bg: rgba(255,255,255,0.1);
+    --list-bg: rgba(255,255,255,0.05);
+    --performance-bg: linear-gradient(135deg, #1e293b, #0f172a);
+    --stat-text: white;
+    --chart-axis-color: #cbd5e6;
+    --chart-grid-color: rgba(148, 163, 184, 0.2);
+    --chart-title-color: #94a3b8;
+  }
+
+  /* Light theme - enhanced contrast for maximum readability (optional improvements applied) */
+  .light {
+    --bg: #f1f5f9;
+    --card-bg: rgba(255, 255, 255, 0.96);
+    --card-solid: #ffffff;
+    --text-primary: #0f172a;
+    --text-secondary: #1e293b;
+    --accent: #2563eb;
+    --accent-glow: #1d4ed8;
+    --border-glow: rgba(37, 99, 235, 0.25);
+    --stat-gradient-start: #0f766e;
+    --stat-gradient-end: #1e40af;
+    --sidebar-hover: rgba(37, 99, 235, 0.12);
+    --input-bg: rgba(0,0,0,0.04);
+    --list-bg: rgba(0,0,0,0.04);
+    --performance-bg: #ffffff;
+    --stat-text: white;
+    --chart-axis-color: #000000;        /* Maximum contrast for light mode */
+    --chart-grid-color: rgba(0,0,0,0.1);
+    --chart-title-color: #0f172a;
+  }
+
+  body {
+    background: radial-gradient(circle at 10% 20%, var(--bg), #030712);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    min-height: 100vh;
+  }
+  .light body {
+    background: linear-gradient(135deg, #e2e8f0, #cbd5e6);
+  }
+
+  /* glassmorphic panels */
+  .glass-card {
+    backdrop-filter: blur(12px);
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 20px 35px -12px rgba(0,0,0,0.3);
+  }
+
+  /* NEON PREMIUM LOGIN (always dark/neon, unaffected by theme) */
+  .center {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at 30% 10%, #0a0f1e, #020617);
+  }
+  .neon-login {
+    backdrop-filter: blur(18px);
+    background: rgba(5, 10, 25, 0.75);
+    padding: 2.2rem;
+    border-radius: 2rem;
+    width: 360px;
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.3), 0 0 5px rgba(0, 255, 255, 0.5);
+    text-align: center;
+    transition: box-shadow 0.3s ease;
+  }
+  .neon-login:hover {
+    box-shadow: 0 0 40px rgba(56, 189, 248, 0.6), 0 0 12px #38bdf8;
+  }
+  .neon-login h2 {
+    background: linear-gradient(135deg, #a5f3fc, #38bdf8, #7c3aed);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    margin-bottom: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    font-size: 1.9rem;
+    text-shadow: 0 0 8px rgba(56,189,248,0.4);
+  }
+  .neon-login input {
+    width: 100%;
+    margin: 12px 0;
+    padding: 14px;
+    border: none;
+    border-radius: 1rem;
+    background: rgba(255,255,255,0.1);
+    color: #ffffff;
+    font-weight: 500;
+    outline: none;
+    backdrop-filter: blur(4px);
+    transition: all 0.2s;
+    border: 1px solid rgba(56,189,248,0.4);
+  }
+  .neon-login input:focus {
+    background: rgba(56,189,248,0.2);
+    box-shadow: 0 0 12px #38bdf8, 0 0 0 1px #38bdf8;
+    border-color: #38bdf8;
+  }
+  .neon-login button {
+    padding: 12px;
+    border: none;
+    border-radius: 2rem;
+    background: linear-gradient(95deg, #0ea5e9, #2563eb);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1rem;
+    margin-top: 12px;
+    transition: all 0.2s;
+    box-shadow: 0 0 8px #0ea5e9;
+  }
+  .neon-login button:hover {
+    transform: scale(1.01);
+    box-shadow: 0 0 20px #38bdf8;
+    background: linear-gradient(95deg, #38bdf8, #3b82f6);
+  }
+  .neon-login p {
+    font-size: 12px;
+    margin-top: 16px;
+    opacity: 0.7;
+    color: #cbd5e6;
+  }
+
+  /* main app layout */
+  .container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* premium sidebar */
+  .sidebar {
+    width: 270px;
+    padding: 28px 16px;
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    border-right: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .light .sidebar {
+    border-right: 1px solid rgba(0,0,0,0.1);
+    background: rgba(255, 255, 255, 0.92);
+  }
+  .logo {
+    font-size: 1.7rem;
+    font-weight: 800;
+    background: linear-gradient(120deg, #38bdf8, #c084fc);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    letter-spacing: -0.5px;
+    margin-bottom: 2rem;
+  }
+  .menu div {
+    padding: 12px 18px;
+    margin: 6px 0;
+    border-radius: 1.2rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    backdrop-filter: blur(4px);
+  }
+  .menu div:hover {
+    background: var(--sidebar-hover);
+    transform: translateX(4px);
+  }
+  .active {
+    background: var(--accent) !important;
+    color: white;
+    box-shadow: 0 8px 14px -6px rgba(56,189,248,0.4);
+  }
+  .bottom {
+    display: flex;
+    gap: 12px;
+    margin-top: 2rem;
+  }
+  .bottom button {
+    font-size: 0.8rem;
+    padding: 8px 12px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    border-radius: 2rem;
+    color: var(--accent);
+    font-weight: 500;
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+  }
+  .bottom button:hover {
+    background: var(--accent);
+    color: white;
+  }
+
+  /* main content */
+  .main {
+    flex: 1;
+    padding: 28px 32px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  #userText {
+    background: rgba(56,189,248,0.2);
+    padding: 6px 16px;
+    border-radius: 40px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    backdrop-filter: blur(4px);
+  }
+  .light #userText {
+    background: rgba(37,99,235,0.12);
+    color: #0f172a;
+    border: 1px solid rgba(37,99,235,0.2);
+  }
+
+  /* card styling */
+  .card {
+    background: var(--card-solid);
+    backdrop-filter: blur(8px);
+    border-radius: 1.8rem;
+    padding: 1.5rem;
+    margin-bottom: 1.8rem;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 12px 28px -8px rgba(0,0,0,0.2);
+  }
+  .light .card {
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 8px 20px -6px rgba(0,0,0,0.08);
+    background: #ffffff;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.2rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .stat {
+    background: linear-gradient(125deg, var(--stat-gradient-start), var(--stat-gradient-end));
+    padding: 1.2rem;
+    border-radius: 1.4rem;
+    font-weight: 700;
+    font-size: 1.2rem;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+    color: var(--stat-text);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+  .light .stat {
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    font-weight: 800;
+  }
+  .stat:hover {
+    transform: translateY(-3px);
+  }
+
+  /* Performance percentage special card (emoji removed, high contrast) */
+  .performance-card {
+    background: var(--performance-bg);
+    border-radius: 1.4rem;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(56,189,248,0.3);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .light .performance-card {
+    background: #ffffff;
+    border: 1px solid rgba(37,99,235,0.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  .performance-label {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: var(--text-primary);
+  }
+  .performance-value {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #38bdf8, #a855f7);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+  .light .performance-value {
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    background-clip: text;
+    -webkit-background-clip: text;
+  }
+
+  /* schedule items */
+  .schedule-item {
+    margin: 10px 0;
+    padding: 14px 18px;
+    border-radius: 1rem;
+    background: rgba(56,189,248,0.08);
+    border-left: 4px solid var(--accent);
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .light .schedule-item {
+    background: rgba(37,99,235,0.06);
+    color: #0f172a;
+  }
+
+  #attendance ol, #tasks ol {
+    padding-left: 1.5rem;
+  }
+  #attendance li, #tasks li {
+    padding: 10px 8px;
+    margin: 6px 0;
+    background: var(--list-bg);
+    border-radius: 1rem;
+    list-style-type: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-primary);
+  }
+  .light #attendance li, .light #tasks li {
+    background: #f8fafc;
+    color: #0f172a;
+  }
+  #tasks li::before {
+    content: "•";
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--accent);
+  }
+  #attendance li::before {
+    content: "▹";
+    color: var(--accent);
+    font-weight: bold;
+  }
+
+  /* chart container premium */
+  .chart-container {
+    position: relative;
+    margin-top: 10px;
+    padding: 10px 0;
+  }
+  canvas {
+    max-height: 280px !important;
+    width: 100% !important;
+  }
+
+  /* responsive */
+  @media (max-width: 760px) {
+    .container {
+      flex-direction: column;
+    }
+    .sidebar {
+      width: 100%;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 12px 20px;
+    }
+    .logo {
+      margin-bottom: 0;
+      font-size: 1.4rem;
+    }
+    .menu {
+      flex-direction: row;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .menu div {
+      padding: 8px 14px;
+      font-size: 0.8rem;
+    }
+    .bottom {
+      margin-top: 0;
+    }
+    .main {
+      padding: 20px;
+    }
+    .performance-value {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- NEON PREMIUM LOGIN MODULE -->
+<div id="loginPage" class="center">
+  <div class="neon-login">
+    <h2>NeuroCampus Pro</h2>
+    <input id="username" placeholder="Student ID / Email" autocomplete="off">
+    <input type="password" id="password" placeholder="Password" autocomplete="off">
+    <button onclick="login()">Access Dashboard</button>
+    <p>Secure neural gateway · enter any credentials</p>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="appPage" style="display:none;">
+<div class="container">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div>
+      <div class="logo">NeuroCampus</div>
+      <div class="menu">
+        <div class="active" data-page="dashboard" onclick="showPage('dashboard',this)">Dashboard</div>
+        <div data-page="tasks" onclick="showPage('tasks',this)">Tasks</div>
+        <div data-page="schedule" onclick="showPage('schedule',this)">Schedule</div>
+        <div data-page="attendance" onclick="showPage('attendance',this)">Attendance</div>
+      </div>
+    </div>
+    <div class="bottom">
+      <button onclick="toggleTheme()">Theme</button>
+      <button onclick="logout()">Exit</button>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+    <div class="header">
+      <h2 id="title" style="font-weight: 700; letter-spacing: -0.3px;">Dashboard</h2>
+      <div id="userText"></div>
+    </div>
+
+    <!-- DASHBOARD SECTION -->
+    <div id="dashboard">
+      <div class="card">
+        <h3 id="welcomeText" style="font-size: 1.6rem;"></h3>
+      </div>
+
+      <!-- PERFORMANCE PERCENTAGE CARD -->
+      <div class="performance-card">
+        <span class="performance-label">Overall Performance</span>
+        <span class="performance-value" id="overallPerformance">--%</span>
+      </div>
+
+      <div class="grid">
+        <div class="stat">Progress 74%</div>
+        <div class="stat">Tasks 7/10</div>
+        <div class="stat">Attendance 89%</div>
+        <div class="stat">Projects 3</div>
+      </div>
+
+      <!-- PREMIUM BAR CHART: 6 DAYS / 6 COLORS -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3>Weekly Performance</h3>
+          <span style="font-size: 0.7rem; background: var(--accent); padding: 4px 12px; border-radius: 50px; color: white;">6‑day insight</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="premiumChart"></canvas>
+        </div>
+        <p style="font-size: 0.75rem; text-align: center; margin-top: 12px; opacity:0.7;">Distinct color per day · percentage values on vertical axis</p>
+      </div>
+    </div>
+
+    <!-- TASKS (professional list) -->
+    <div id="tasks" style="display:none;" class="card">
+      <h3>Cognitive Task Flow</h3>
+      <ol style="list-style: none;">
+        <li>Complete UI Design & micro-interactions</li>
+        <li>Fix responsive layout bugs</li>
+        <li>Improve navigation architecture</li>
+        <li>Add realtime chart animations</li>
+        <li>Optimize bundle size & performance</li>
+        <li>Theme persistence & smooth toggling</li>
+        <li>Implement 6‑day analytics preview</li>
+        <li>AI study planner integration</li>
+        <li>Testing & debugging</li>
+        <li>Deploy to NeuroCloud</li>
+      </ol>
+    </div>
+
+    <!-- SCHEDULE -->
+    <div id="schedule" style="display:none;" class="card">
+      <h3>Smart Schedule · Adaptive Learning</h3>
+      <div class="schedule-item">Neural Networks · 9:00 AM</div>
+      <div class="schedule-item">UI/UX Psychology · 10:30 AM</div>
+      <div class="schedule-item">Data Visualization · 12:00 PM</div>
+      <div class="schedule-item">Full‑Stack Lab · 2:30 PM</div>
+      <div class="schedule-item">AI Ethics · 4:00 PM</div>
+      <div class="schedule-item">Neuro Wellness · 5:30 PM</div>
+    </div>
+
+    <!-- ATTENDANCE -->
+    <div id="attendance" style="display:none;" class="card">
+      <h3>Live Attendance · Cohort 2026</h3>
+      <ol style="list-style: none;">
+        <li>Olivia Chen · 94%</li>
+        <li>Marcus Rivera · 87%</li>
+        <li>Zara Ahmed · 96%</li>
+        <li>Ethan Park · 78%</li>
+        <li>Sophia Laurent · 91%</li>
+        <li>Liam O'Connor · 82%</li>
+        <li>Maya Singh · 95%</li>
+        <li>Noah Williams · 88%</li>
+        <li>Isabella Rossi · 93%</li>
+        <li>Lucas Kim · 84%</li>
+      </ol>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+  let globalChart = null;
+  // Weekly dataset (same as chart)
+  const weeklyData = [82, 74, 90, 68, 77, 88];
+
+  function login() {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
+    if (username === "") {
+      alert("Please enter your student ID or name to access NeuroCampus.");
+      return;
+    }
+    if (password === "") {
+      alert("Please enter your password to continue.");
+      return;
+    }
+    localStorage.setItem("neuro_user", username);
+    showApp();
+  }
+
+  function showApp() {
+    const user = localStorage.getItem("neuro_user");
+    if (!user) return;
+
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("appPage").style.display = "block";
+
+    document.getElementById("userText").innerHTML = `${user}`;
+    document.getElementById("welcomeText").innerHTML = `Welcome back, ${user}`;
+
+    // Calculate and display overall performance percentage (average of weekly data)
+    const avgPerformance = (weeklyData.reduce((a,b) => a + b, 0) / weeklyData.length).toFixed(1);
+    document.getElementById("overallPerformance").innerText = `${avgPerformance}%`;
+
+    initPremiumBarChart();
+  }
+
+  // Premium Bar Chart: 6 distinct days, 6 unique colors, percentage clearly visible
+  function initPremiumBarChart() {
+    const canvas = document.getElementById('premiumChart');
+    if (!canvas) return;
+
+    if (globalChart) {
+      globalChart.destroy();
+      globalChart = null;
+    }
+
+    const ctx = canvas.getContext('2d');
+    const labels = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+
+    // 6 professional, vibrant colors
+    const barColors = [
+      '#3b82f6',   // electric blue
+      '#8b5cf6',   // vivid purple
+      '#f59e0b',   // amber
+      '#10b981',   // emerald
+      '#ef4444',   // crimson
+      '#ec4899'    // magenta
+    ];
+
+    const borderColors = barColors.map(c => c + 'cc');
+
+    globalChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Performance Score (%)',
+          data: weeklyData,
+          backgroundColor: barColors,
+          borderColor: borderColors,
+          borderWidth: 1.5,
+          borderRadius: 12,
+          barPercentage: 0.7,
+          categoryPercentage: 0.8,
+          hoverOffset: 8,
+          hoverBackgroundColor: barColors.map(c => c + 'ee'),
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.85)',
+            titleColor: '#facc15',
+            bodyColor: '#ffffff',
+            borderColor: '#38bdf8',
+            borderWidth: 1,
+            callbacks: {
+              label: function(context) {
+                return `Score: ${context.raw}%  ·  Performance Index`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            grid: {
+              color: 'rgba(148, 163, 184, 0.2)',
+              lineWidth: 1,
+            },
+            title: {
+              display: true,
+              text: 'Performance (%)',
+              color: '#94a3b8',
+              font: { weight: 'bold', size: 11 }
+            },
+            ticks: {
+              stepSize: 20,
+              callback: (val) => val + '%',
+              color: '#cbd5e6'
+            }
+          },
+          x: {
+            grid: { display: false },
+            ticks: {
+              font: { weight: 'bold', size: 12 },
+              color: '#cbd5e6'
+            }
+          }
+        },
+        layout: {
+          padding: { top: 12, bottom: 8, left: 6, right: 8 }
+        },
+        elements: {
+          bar: {
+            borderSkipped: 'round',
+          }
+        },
+        animation: {
+          duration: 1200,
+          easing: 'easeOutQuart'
+        },
+        onHover: (event, activeElements) => {
+          event.native.target.style.cursor = activeElements.length ? 'pointer' : 'default';
+        }
+      }
+    });
+
+    applyChartThemeColors();
+  }
+
+  function applyChartThemeColors() {
+    if (!globalChart) return;
+    const isLightTheme = document.body.classList.contains('light');
+    // Use the CSS variables for chart colors (defined in :root and .light)
+    const axisColor = getComputedStyle(document.body).getPropertyValue('--chart-axis-color').trim();
+    const gridColor = getComputedStyle(document.body).getPropertyValue('--chart-grid-color').trim();
+    const titleColor = getComputedStyle(document.body).getPropertyValue('--chart-title-color').trim();
+    if (globalChart.options.scales) {
+      globalChart.options.scales.x.ticks.color = axisColor;
+      globalChart.options.scales.y.ticks.color = axisColor;
+      globalChart.options.scales.y.grid.color = gridColor;
+      globalChart.options.scales.y.title.color = titleColor;
+      globalChart.update('none');
+    }
+  }
+
+  function showPage(pageId, element) {
+    const pages = ['dashboard', 'tasks', 'schedule', 'attendance'];
+    pages.forEach(p => {
+      const pageDiv = document.getElementById(p);
+      if (pageDiv) pageDiv.style.display = 'none';
+    });
+    document.getElementById(pageId).style.display = 'block';
+    document.querySelectorAll(".menu div").forEach(div => div.classList.remove("active"));
+    if (element) element.classList.add("active");
+
+    let titleText = "";
+    switch(pageId) {
+      case 'dashboard': titleText = "Dashboard · Neural Insights"; break;
+      case 'tasks': titleText = "Tasks · Cognitive Load"; break;
+      case 'schedule': titleText = "Schedule · Flow State"; break;
+      case 'attendance': titleText = "Attendance · Engagement Hub"; break;
+    }
+    document.getElementById("title").innerText = titleText;
+
+    if (pageId === 'dashboard') {
+      setTimeout(() => {
+        if (globalChart) {
+          globalChart.update('none');
+        } else {
+          initPremiumBarChart();
+        }
+      }, 80);
+    }
+  }
+
+  function toggleTheme() {
+    document.body.classList.toggle("light");
+    // Re-apply chart theme colors after class change
+    if (globalChart) {
+      const axisColor = getComputedStyle(document.body).getPropertyValue('--chart-axis-color').trim();
+      const gridColor = getComputedStyle(document.body).getPropertyValue('--chart-grid-color').trim();
+      const titleColor = getComputedStyle(document.body).getPropertyValue('--chart-title-color').trim();
+      globalChart.options.scales.x.ticks.color = axisColor;
+      globalChart.options.scales.y.ticks.color = axisColor;
+      globalChart.options.scales.y.grid.color = gridColor;
+      globalChart.options.scales.y.title.color = titleColor;
+      globalChart.update('none');
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem("neuro_user");
+    location.reload();
+  }
+
+  window.onload = function() {
+    const savedUser = localStorage.getItem("neuro_user");
+    if (savedUser) {
+      showApp();
+    } else {
+      document.getElementById("loginPage").style.display = "flex";
+      document.getElementById("appPage").style.display = "none";
+    }
+    window.addEventListener('resize', () => {
+      if (globalChart) {
+        globalChart.resize();
+      }
+    });
+  };
+</script>
+</body>
+</html>
